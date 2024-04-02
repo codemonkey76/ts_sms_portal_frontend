@@ -1,6 +1,8 @@
 import axios from 'axios'
 import { createRouter, createWebHistory } from 'vue-router'
 axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL
+axios.defaults.withCredentials = true
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -11,7 +13,8 @@ const router = createRouter({
         {
           path: '',
           name: 'login',
-          component: () => import('@/views/LoginView.vue')
+          component: () => import('@/views/LoginView.vue'),
+          meta: { requiresGuest: true }
         }
       ]
     },
@@ -36,27 +39,32 @@ interface CheckSessionResponse {
   loggedIn: boolean;
 }
 
-router.beforeEach((to, _from, next) => {
+router.beforeEach((to, _, next) => {
+  const requiresSessionCheck = to.matched.some(record => record.meta.requiresGuest) || to.matched.some(record => record.meta.requiresAuth);
+
+  if (!requiresSessionCheck) {
+    next();
+    return;
+  }
+
+
   axios.get('/auth/check-session')
     .then(response => {
       const data = response.data as CheckSessionResponse;
       if (data.loggedIn) {
         useAuthStore().login();
-        if (to.path === '/login') {
+        if (to.matched.some(record => record.meta.requiresGuest)) {
           next('/home');
         } else {
           next();
         }
       }
     })
-    .catch(error => {
-      if (error.response && error.response.status === 401) {
-        if (to.matched.some(record => record.meta.requiresAuth)) {
-          next('/login');
-        } else {
-          console.error('Session check failed:', error);
-          next('/login');
-        }
+    .catch(_ => {
+      if (to.path !== '/login') {
+        next('/login');
+      } else {
+        next();
       }
     });
 });
