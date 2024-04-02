@@ -1,14 +1,16 @@
 <script setup lang="ts">
 import axios from 'axios'
-
+import {useAuthStore} from '@/stores/auth'
+const authStore = useAuthStore()
 const handleLogin = () => {
   console.log('Login')
   axios
     .post('http://localhost:8080/api/v1/auth/login', {
       email: 'admin@example.com',
-      pasword: 'password'
+      password: 'password'
     })
     .then((response) => {
+      authStore.login()
       console.log(response)
     })
     .catch((error) => {
