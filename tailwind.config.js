@@ -2,7 +2,12 @@
 export default {
   content: ['./src/**/*.{vue,js,ts,jsx,tsx}'],
   theme: {
-    extend: {}
+    extend: {
+      fontFamily: {
+        sans: ['Open Sans', 'sans-serif'],
+        montserrat: ['Montserrat', 'sans-serif']
+      }
+    }
   },
   plugins: [require('@tailwindcss/forms')]
 }

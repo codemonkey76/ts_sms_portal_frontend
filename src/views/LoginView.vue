@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useAuthStore } from '@/stores/auth'
 import axios from 'axios'
 import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
@@ -8,6 +9,7 @@ const handleLogin = () => {
   axios
     .post('/auth/login', form)
     .then((response) => {
+      useAuthStore().login(response.data)
       router.push({ name: 'home' })
     })
     .catch((error) => {

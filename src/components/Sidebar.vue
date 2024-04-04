@@ -31,7 +31,7 @@ const toggleSidebar = () => {
   >
     <div class="flex flex-col flex-1 p-1">
       <!-- Logo //-->
-      <div class="flex space-x-4 justify-center p-4">
+      <div class="flex space-x-4 justify-center p-4 h-20">
         <svg
           :class="{ 'h-12 w-12': sidebarOpen, 'h-8 w-8': !sidebarOpen }"
           class="text-gray-500"

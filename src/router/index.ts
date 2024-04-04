@@ -61,6 +61,7 @@ router.beforeEach((to, _, next) => {
       }
     })
     .catch(_ => {
+      useAuthStore().logout();
       if (to.path !== '/login') {
         next('/login');
       } else {
