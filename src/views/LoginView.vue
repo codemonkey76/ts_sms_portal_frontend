@@ -9,7 +9,7 @@ const handleLogin = () => {
   axios
     .post('/auth/login', form)
     .then((response) => {
-      useAuthStore().login(response.data)
+      useAuthStore().login(response.data.data)
       router.push({ name: 'home' })
     })
     .catch((error) => {

@@ -10,8 +10,10 @@ import {
 } from '@headlessui/vue'
 import { ChevronDownIcon } from '@heroicons/vue/20/solid'
 import axios from 'axios'
+import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
+const auth = useAuthStore();
 
 type NavLink = {
   label: string;
@@ -59,7 +61,7 @@ const handleMenuItemClick = (item: NavLink) => {
                 <span class="sr-only">Open user menu</span>
                 <img class="h-10 w-10 rounded-full object-cover" src="https://ui-avatars.com/api/?name=A+U&amp;color=7F9CF5&amp;background=EBF4FF" alt="Profile Logo">
                 <span class="hidden lg:flex lg:items-center">
-                  <span class="ml-4 text-sm leading-6 text-gray-900" aria-hidden="true">Tom Cook</span>
+                  <span class="ml-4 text-sm leading-6 text-gray-900" aria-hidden="true">{{ auth.user_data?.user.name }}</span>
                   <ChevronDownIcon class="ml-2 h-5 w-5 text-gray-400" aria-hidden="true" />
                 </span>
               </MenuButton>
