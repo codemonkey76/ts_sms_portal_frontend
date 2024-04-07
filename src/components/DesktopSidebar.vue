@@ -3,7 +3,7 @@ import { useAuthStore } from '@/stores/auth'
 import { ref } from 'vue'
 import IconChevronLeft from './icons/IconChevronLeft.vue'
 import IconLogo from './icons/IconLogo.vue'
-import * as HeroIcons from '@heroicons/vue/outline';
+import * as HeroIcons from '@heroicons/vue/outline'
 
 const sidebarOpen = ref(true)
 const itemsShown = ref(true)
@@ -29,17 +29,17 @@ const toggleSidebar = () => {
 }
 
 type MenuItem = {
-  id: string;
-  title: string;
-  expandable: boolean;
+  id: string
+  title: string
+  expandable: boolean
   isOpen?: boolean
-  link?: string;
-  icon?: string;
-  permissions?: string|string[];
-  children?: MenuItem[];
+  link?: string
+  icon?: string
+  permissions?: string | string[]
+  children?: MenuItem[]
 }
 
-type Menu = MenuItem[];
+type Menu = MenuItem[]
 
 const menu: Menu = [
   {
@@ -47,7 +47,7 @@ const menu: Menu = [
     title: 'Dashboard',
     expandable: false,
     link: '/',
-    icon: 'home',
+    icon: 'home'
   },
   {
     id: '2',
@@ -60,15 +60,15 @@ const menu: Menu = [
         id: '2.1',
         title: 'All Users',
         expandable: false,
-        link: '/users',
+        link: '/users'
       },
       {
         id: '2.2',
         title: 'Add User',
         expandable: false,
-        link: '/users/add',
-      },
-    ],
+        link: '/users/add'
+      }
+    ]
   },
   {
     id: '3',
@@ -80,24 +80,23 @@ const menu: Menu = [
         id: '3.1',
         title: 'General',
         expandable: false,
-        link: '/settings/general',
+        link: '/settings/general'
       },
       {
         id: '3.2',
         title: 'Security',
         expandable: false,
-        link: '/settings/security',
-      },
-    ],
+        link: '/settings/security'
+      }
+    ]
   }
 ]
-const auth = useAuthStore();
+const auth = useAuthStore()
 // auth.hasPermission(permission)
-
 </script>
 <template>
   <div
-    class="border-r border-gray-200 bg-white flex transition-width duration-150 ease-in-out flex flex-col divide-y divide-gray-200"
+    class="h-screen border-r border-gray-200 bg-white flex transition-width duration-150 ease-in-out flex flex-col divide-y divide-gray-200"
     :class="{ 'w-64': sidebarOpen, 'w-20': !sidebarOpen }"
   >
     <!-- Header -->
@@ -114,7 +113,7 @@ const auth = useAuthStore();
 
     <!-- Menu Items -->
     <div class="flex flex-col flex-1 bg-white overflow-y-scroll">
-      <div v-for="x in [...Array(100).keys()]" class="flex space-x-2 py-2" :key="'item-'+x">
+      <div v-for="x in [...Array(100).keys()]" class="flex space-x-2 py-2" :key="'item-' + x">
         <div>Icon</div>
         <div v-if="itemsShown" class="text-gray-500 text-md">Item Description</div>
       </div>

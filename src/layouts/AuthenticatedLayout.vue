@@ -6,9 +6,9 @@ import HeaderBar from '@/components/HeaderBar.vue'
   <div class="flex bg-white h-screen">
     <!-- <Sidebar /> -->
     <desktop-sidebar />
-    <div class="flex-1 flex flex-col">
-    <header-bar />
-      <div class="flex-1">
+    <div class="h-screen flex-1">
+      <header-bar />
+      <div class="border-2 border-red-400">
         <RouterView />
       </div>
     </div>
