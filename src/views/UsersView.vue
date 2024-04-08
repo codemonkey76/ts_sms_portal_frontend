@@ -2,9 +2,10 @@
 import Paginator from '@/components/Paginator.vue'
 import listUsers from '@/composables/listUsers'
 import { usePaginator }  from '@/composables/usePagination'
+import { ref, watch } from 'vue'
 
 const { options } = usePaginator("users")
-const { users, loading, meta } = listUsers(options);
+const { users, meta } = listUsers(options);
 
 const pageChangeHandler = (page: number) => {
   options.value.page = page;
@@ -13,15 +14,14 @@ const pageChangeHandler = (page: number) => {
 const perPageChangeHandler = (perPage: number) => {
   options.value.per_page = perPage;
 }
-
 </script>
 <template>
   <div class="flex flex-col px-6 py-2">
     <h2 class="text-2xl font-semibold text-gray-900 pb-4 mb-6 border-b">Users</h2>
-  <div v-if="!loading" class="flex flex-col">
+  <div class="flex flex-col">
     <div class="rounded-md px-3 pb-1.5 pt-2.5 shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-indigo-600">
       <label for="name" class="block text-xs font-medium text-gray-900">Search</label>
-      <input v-model="options.search" type="text" name="name" id="name" class="block w-full border-0 p-0 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6" placeholder="Search" />
+      <input v-model="options.search" data-lpignore="true" type="text" name="name" id="name" class="block w-full border-0 p-0 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6" placeholder="Search" />
     </div>
     <table class="min-w-full divide-y divide-gray-300">
       <thead>

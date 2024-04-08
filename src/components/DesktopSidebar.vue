@@ -61,6 +61,7 @@ const menu: Menu = [
     expandable: true,
     icon: 'Users',
     permissions: 'users.list',
+    link: '/users',
     children: [
       {
         id: '2.1',
@@ -118,11 +119,11 @@ const auth = useAuthStore()
     <!-- Header -->
 
     <!-- Menu Items -->
-    <div class="flex flex-col flex-1 bg-white overflow-y-auto">
-      <div v-for="(item, index) in menu" :key="'item-' + item" class="flex space-x-2 py-2">
-        <component :is="getIconComponent(item.icon)" class="w-6 h-6 text-gray-500" />
-        <div v-if="itemsShown" class="text-gray-500 text-md">Item Description</div>
-      </div>
+    <div class="flex flex-col flex-1 bg-white overflow-y-auto p-4" :class="{'items-center': !sidebarOpen}">
+      <a :href="item.link" v-for="(item, index) in menu" :key="'item-' + index" class="flex space-x-2 py-2 text-gray-500 hover:text-gray-700">
+        <component :is="getIconComponent(item.icon)" class="transition-all duration-300" :class="sidebarOpen ? 'w-5 h-5' : 'w-6 h-6'" />
+        <div v-if="itemsShown" class="flex-1 text-md">{{ item.title }}</div>
+      </a>
     </div>
     <!-- Menu Items -->
 

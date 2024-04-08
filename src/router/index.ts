@@ -19,6 +19,30 @@ const router = createRouter({
       ]
     },
     {
+      path: '/register',
+      component: () => import('@/layouts/UnauthenticatedLayout.vue'),
+      children: [
+        {
+          path: '',
+          name: 'register',
+          component: () => import('@/views/RegisterView.vue'),
+          meta: { requiresGuest: true }
+        }
+      ]
+    },
+    {
+      path: '/verify-email',
+      component: () => import('@/layouts/UnauthenticatedLayout.vue'),
+      children: [
+        {
+          path: '',
+          name: 'verify-email',
+          component: () => import('@/views/VerifyEmailView.vue'),
+          meta: { requiresAuth: true }
+        }
+      ]
+    },
+    {
       path: '/',
       component: () => import('@/layouts/AuthenticatedLayout.vue'),
       children: [
@@ -26,7 +50,7 @@ const router = createRouter({
           path: '',
           name: 'home',
           component: () => import('@/views/HomeView.vue'),
-          meta: { requiresAuth: true }
+          meta: { requiresAuth: true, requiresVerified: true }
         },
         {
           path: 'users',
@@ -43,32 +67,59 @@ import { useAuthStore } from '@/stores/auth'
 
 interface CheckSessionResponse {
   loggedIn: boolean;
+  verified: boolean;
 }
 
 router.beforeEach((to, _, next) => {
-  const requiresSessionCheck = to.matched.some(record => record.meta.requiresGuest) || to.matched.some(record => record.meta.requiresAuth);
+  const authStore = useAuthStore();
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+  const requiresGuest = to.matched.some(record => record.meta.requiresGuest);
+  const requiresVerified = to.matched.some(record => record.meta.requiresVerified);
 
-  if (!requiresSessionCheck) {
+  if (!requiresAuth && !requiresGuest) {
     next();
     return;
   }
 
-
   axios.get('/auth/check-session')
     .then(response => {
       const data = response.data as CheckSessionResponse;
+
       if (data.loggedIn) {
-        useAuthStore().login();
-        if (to.matched.some(record => record.meta.requiresGuest)) {
-          next('/home');
-        } else {
+        authStore.login();
+
+        if (requiresVerified)
+        if (data.verified) {
           next();
+          return;
         }
+
+
+
       }
+      else {
+        authStore.logout();
+
+
+
+      }
+
+      if (!data.verified) {
+        next('/verify-email')
+        return;
+      }
+
+      if (requiresGuest) {
+        next('/');
+      } else {
+        next();
+      }
+
     })
     .catch(_ => {
-      useAuthStore().logout();
-      if (to.path !== '/login') {
+      authStore.logout();
+
+      if (requiresAuth) {
         next('/login');
       } else {
         next();

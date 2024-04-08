@@ -2,24 +2,17 @@
 import { useAuthStore } from '@/stores/auth'
 import useValidation from '@/composables/useValidation.ts'
 import axios from 'axios'
-import { onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { reactive } from 'vue'
 const router = useRouter()
 const { errors, setErrors } = useValidation()
 
-const remember_me = ref(false)
-
 const handleLogin = () => {
   axios
-    .post('/auth/login', form)
+    .post('/auth/register', form)
     .then((response) => {
       useAuthStore().login(response.data.data)
-      if (remember_me.value) {
-        localStorage.setItem('userEmail', form.email)
-      } else {
-        localStorage.removeItem('userEmail')
-      }
-      router.push({ name: 'home' })
+      router.push({name: "verify_email"})
     })
     .catch((error) => {
       if (error.response.status === 422) {
@@ -30,16 +23,13 @@ const handleLogin = () => {
 }
 
 const form = reactive({
+  name: '',
   email: '',
-  password: ''
+  invite_code: '',
+  password: '',
+  password_confirmation: ''
 });
 
-onMounted(() => {
-  if (localStorage.getItem('userEmail')) {
-    form.email = localStorage.getItem('userEmail');
-    remember_me.value = true;
-  }
-});
 </script>
 <template>
   <div class="flex min-h-full flex-1 flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -50,16 +40,37 @@ onMounted(() => {
         alt="Your Company"
       />
       <h2 class="mt-6 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-        Sign in to your account
+        Create a new account
       </h2>
     </div>
 
     <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-[480px]">
       <div class="bg-white px-6 py-12 shadow sm:rounded-lg sm:px-12">
         <form class="space-y-6" @submit.prevent="handleLogin" action="#" method="POST">
+
+          <div>
+            <label for="name" class="block text-sm font-medium leading-6 text-gray-900"
+            >Name</label
+            >
+            <div class="mt-2">
+              <input
+                id="name"
+                name="name"
+                type="text"
+                autocomplete="name"
+                required=""
+                v-model="form.name"
+                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+              />
+              <p v-if="errors.has('name')" class="text-red-500 text-xs mt-1">
+                {{ errors.first('name') }}
+              </p>
+            </div>
+          </div>
+
           <div>
             <label for="email" class="block text-sm font-medium leading-6 text-gray-900"
-              >Email address</label
+            >Email address</label
             >
             <div class="mt-2">
               <input
@@ -78,15 +89,33 @@ onMounted(() => {
           </div>
 
           <div>
+            <label for="invite_code" class="block text-sm font-medium leading-6 text-gray-900"
+            >Invite Code</label
+            >
+            <div class="mt-2">
+              <input
+                id="invite_code"
+                name="invite_code"
+                type="text"
+                required=""
+                v-model="form.invite_code"
+                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+              />
+              <p v-if="errors.has('invite_code')" class="text-red-500 text-xs mt-1">
+                {{ errors.first('invite_code') }}
+              </p>
+            </div>
+          </div>
+
+          <div>
             <label for="password" class="block text-sm font-medium leading-6 text-gray-900"
-              >Password</label
+            >Password</label
             >
             <div class="mt-2">
               <input
                 id="password"
                 name="password"
                 type="password"
-                autocomplete="current-password"
                 required=""
                 v-model="form.password"
                 class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -97,24 +126,22 @@ onMounted(() => {
             </div>
           </div>
 
-          <div class="flex items-center justify-between">
-            <div class="flex items-center">
+          <div>
+            <label for="password_confirmation" class="block text-sm font-medium leading-6 text-gray-900"
+            >Confirm Password</label
+            >
+            <div class="mt-2">
               <input
-                v-model="remember_me"
-                id="remember-me"
-                name="remember-me"
-                type="checkbox"
-                class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                id="password_confirmation"
+                name="password_confirmation"
+                type="password"
+                required=""
+                v-model="form.password_confirmation"
+                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               />
-              <label for="remember-me" class="ml-3 block text-sm leading-6 text-gray-900"
-                >Remember me</label
-              >
-            </div>
-
-            <div class="text-sm leading-6">
-              <a href="#" class="font-semibold text-indigo-600 hover:text-indigo-500"
-                >Forgot password?</a
-              >
+              <p v-if="errors.has('password_confirmation')" class="text-red-500 text-xs mt-1">
+                {{ errors.first('password_confirmation') }}
+              </p>
             </div>
           </div>
 
@@ -123,17 +150,17 @@ onMounted(() => {
               type="submit"
               class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
             >
-              Sign in
+              Create Account
             </button>
           </div>
         </form>
       </div>
 
       <p class="mt-10 text-center text-sm text-gray-500">
-        Not a member?
+        Already have an account?
         {{ ' ' }}
-        <router-link to="/register" class="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
-          >Register</router-link>
+        <router-link to="/login" class="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
+        >Login</router-link>
       </p>
     </div>
   </div>
