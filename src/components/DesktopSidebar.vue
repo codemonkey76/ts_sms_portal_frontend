@@ -1,9 +1,15 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { useAuthStore } from '@/stores/auth'
 import { ref } from 'vue'
 import IconChevronLeft from './icons/IconChevronLeft.vue'
 import IconLogo from './icons/IconLogo.vue'
-import * as HeroIcons from '@heroicons/vue/outline'
+import * as HeroIcons from '@heroicons/vue/24/solid'
+
+const getIconComponent = (iconName: string|undefined) => {
+  console.log("Trying to get icon component", iconName)
+  if (!iconName) return null
+  return HeroIcons[iconName+"Icon"]
+}
 
 const sidebarOpen = ref(true)
 const itemsShown = ref(true)
@@ -47,13 +53,13 @@ const menu: Menu = [
     title: 'Dashboard',
     expandable: false,
     link: '/',
-    icon: 'home'
+    icon: 'Home'
   },
   {
     id: '2',
     title: 'Users',
     expandable: true,
-    icon: 'users',
+    icon: 'Users',
     permissions: 'users.list',
     children: [
       {
@@ -74,7 +80,7 @@ const menu: Menu = [
     id: '3',
     title: 'Settings',
     expandable: true,
-    icon: 'cog',
+    icon: 'Cog',
     children: [
       {
         id: '3.1',
@@ -96,8 +102,8 @@ const auth = useAuthStore()
 </script>
 <template>
   <div
-    class="h-screen border-r border-gray-200 bg-white flex transition-width duration-150 ease-in-out flex flex-col divide-y divide-gray-200"
     :class="{ 'w-64': sidebarOpen, 'w-20': !sidebarOpen }"
+    class="h-screen border-r border-gray-200 bg-white flex transition-width duration-150 ease-in-out flex flex-col divide-y divide-gray-200"
   >
     <!-- Header -->
     <div class="flex space-x-4 justify-center p-4 h-20">
@@ -112,9 +118,9 @@ const auth = useAuthStore()
     <!-- Header -->
 
     <!-- Menu Items -->
-    <div class="flex flex-col flex-1 bg-white overflow-y-scroll">
-      <div v-for="x in [...Array(100).keys()]" class="flex space-x-2 py-2" :key="'item-' + x">
-        <div>Icon</div>
+    <div class="flex flex-col flex-1 bg-white overflow-y-auto">
+      <div v-for="(item, index) in menu" :key="'item-' + item" class="flex space-x-2 py-2">
+        <component :is="getIconComponent(item.icon)" class="w-6 h-6 text-gray-500" />
         <div v-if="itemsShown" class="text-gray-500 text-md">Item Description</div>
       </div>
     </div>
@@ -122,11 +128,11 @@ const auth = useAuthStore()
 
     <!-- Sidebar Toggle -->
     <button
-      @click="toggleSidebar"
-      class="flex p-4"
       :class="{ 'justify-end': sidebarOpen, 'justify-center': !sidebarOpen }"
+      class="flex p-4"
+      @click="toggleSidebar"
     >
-      <IconChevronLeft class="transition-all" :class="{ 'rotate-180': !sidebarOpen }" />
+      <IconChevronLeft :class="{ 'rotate-180': !sidebarOpen }" class="transition-all" />
     </button>
     <!-- Sidebar Toggle -->
   </div>

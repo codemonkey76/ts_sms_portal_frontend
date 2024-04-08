@@ -1,16 +1,20 @@
-import { ref } from "vue";
+import { reactive } from "vue";
 
 type ErrorMessages = Record<string, string[]>;
 
 const useValidation = () => {
-    let errorRecords: ErrorMessages = {};
+    const errorRecords = reactive<ErrorMessages>({});
 
     const setErrors = (newErrors: ErrorMessages) => {
-        errorRecords = newErrors;
+        Object.keys(newErrors).forEach(field => {
+            errorRecords[field] = newErrors[field];
+        });
     };
 
     const clearErrors = () => {
-        errorRecords = {};
+        Object.keys(errorRecords).forEach(field => {
+            delete errorRecords[field];
+        });
     };
 
     const errors = {

@@ -4,13 +4,18 @@ import HeaderBar from '@/components/HeaderBar.vue'
 </script>
 <template>
   <div class="flex bg-white h-screen">
-    <!-- <Sidebar /> -->
+    <!-- Sidebar -->
     <desktop-sidebar />
-    <div class="h-screen flex-1">
+    <!-- Sidebar  -->
+
+
+    <!-- Main -->
+    <div class="flex flex-1 flex-col">
       <header-bar />
-      <div class="border-2 border-red-400">
+      <div class="flex-1 overflow-y-auto">
         <RouterView />
       </div>
     </div>
+    <!-- Main -->
   </div>
 </template>
