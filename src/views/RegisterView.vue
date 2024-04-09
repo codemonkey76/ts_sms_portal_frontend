@@ -46,19 +46,17 @@ const form = reactive({
 
     <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-[480px]">
       <div class="bg-white px-6 py-12 shadow sm:rounded-lg sm:px-12">
-        <form class="space-y-6" @submit.prevent="handleLogin" action="#" method="POST">
+        <form class="space-y-4" @submit.prevent="handleLogin" action="#" method="POST">
 
           <div>
-            <label for="name" class="block text-sm font-medium leading-6 text-gray-900"
-            >Name</label
-            >
-            <div class="mt-2">
+            <label for="name" class="block text-sm font-medium leading-6 text-gray-900">Name</label>
+            <div class="mt-1">
               <input
                 id="name"
                 name="name"
                 type="text"
                 autocomplete="name"
-                required=""
+                required
                 v-model="form.name"
                 class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               />
@@ -72,13 +70,13 @@ const form = reactive({
             <label for="email" class="block text-sm font-medium leading-6 text-gray-900"
             >Email address</label
             >
-            <div class="mt-2">
+            <div class="mt-1">
               <input
                 id="email"
                 name="email"
                 type="email"
                 autocomplete="email"
-                required=""
+                required
                 v-model="form.email"
                 class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               />
@@ -92,12 +90,12 @@ const form = reactive({
             <label for="invite_code" class="block text-sm font-medium leading-6 text-gray-900"
             >Invite Code</label
             >
-            <div class="mt-2">
+            <div class="mt-1">
               <input
                 id="invite_code"
                 name="invite_code"
                 type="text"
-                required=""
+                required
                 v-model="form.invite_code"
                 class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               />
@@ -111,12 +109,12 @@ const form = reactive({
             <label for="password" class="block text-sm font-medium leading-6 text-gray-900"
             >Password</label
             >
-            <div class="mt-2">
+            <div class="mt-1">
               <input
                 id="password"
                 name="password"
                 type="password"
-                required=""
+                required
                 v-model="form.password"
                 class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               />
@@ -135,7 +133,7 @@ const form = reactive({
                 id="password_confirmation"
                 name="password_confirmation"
                 type="password"
-                required=""
+                required="true"
                 v-model="form.password_confirmation"
                 class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               />
