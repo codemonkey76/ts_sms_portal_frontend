@@ -43,6 +43,17 @@ const router = createRouter({
       ]
     },
     {
+      path: '/error',
+      component: () => import('@/layouts/UnauthenticatedLayout.vue'),
+      children: [
+        {
+          path: '',
+          name: 'error',
+          component: () => import('@/views/ErrorView.vue'),
+        }
+      ]
+    },
+    {
       path: '/',
       component: () => import('@/layouts/AuthenticatedLayout.vue'),
       children: [
@@ -50,7 +61,7 @@ const router = createRouter({
           path: '',
           name: 'home',
           component: () => import('@/views/HomeView.vue'),
-          meta: { requiresAuth: true, requiresVerified: true }
+          meta: { requiresVerified: true }
         },
         {
           path: 'users',
@@ -76,7 +87,13 @@ router.beforeEach((to, _, next) => {
   const requiresGuest = to.matched.some(record => record.meta.requiresGuest);
   const requiresVerified = to.matched.some(record => record.meta.requiresVerified);
 
-  if (!requiresAuth && !requiresGuest) {
+  console.assert(!(requiresAuth && requiresGuest), "Route cannot require both auth and guest");
+  if (to.path === '/login') console.assert(!requiresAuth && !requiresVerified, 'Login route must not require auth or verified');
+  if (to.path === '/register') console.assert(!requiresAuth && !requiresVerified, 'Register route must not require auth or verified');
+  if (to.path === '/verify-email') console.assert(!requiresVerified, 'Verify email route must not require verification');
+  if (to.path === '/error') console.assert(!requiresAuth && !requiresVerified, 'Error route must not require auth or verified');
+
+  if (!requiresAuth && !requiresGuest && !requiresVerified) {
     next();
     return;
   }
@@ -88,42 +105,38 @@ router.beforeEach((to, _, next) => {
       if (data.loggedIn) {
         authStore.login();
 
-        if (requiresVerified)
-        if (data.verified) {
-          next();
+        if (requiresVerified) {
+          if (data.verified) {
+            next();
+            return;
+          } else {
+            next('/verify-email')
+            return;
+          }
+        }
+
+        if (requiresGuest) {
+          next('/');
           return;
         }
 
-
-
+        next();
       }
       else {
         authStore.logout();
 
+        if (requiresAuth || requiresVerified) {
+          next('/login');
+          return;
+        }
 
-
-      }
-
-      if (!data.verified) {
-        next('/verify-email')
-        return;
-      }
-
-      if (requiresGuest) {
-        next('/');
-      } else {
         next();
       }
-
     })
-    .catch(_ => {
+    .catch(e => {
       authStore.logout();
-
-      if (requiresAuth) {
-        next('/login');
-      } else {
-        next();
-      }
+      authStore.setError("Unable to check if user session exists!<br>Server may be down, try again later.");
+      next('/error');
     });
 });
 export default router

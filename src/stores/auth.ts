@@ -9,7 +9,8 @@ export type AuthState = {
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     authenticated: false,
-    user_data: null as UserData|null
+    user_data: null as UserData|null,
+    error: null as string|null
   }),
 
   getters: {
@@ -31,5 +32,11 @@ export const useAuthStore = defineStore('auth', {
       this.user_data = null
       this.authenticated = false
     },
+    setError(message: string) {
+      this.error = message
+    },
+    clearError() {
+      this.error = null
+    }
   }
 })
