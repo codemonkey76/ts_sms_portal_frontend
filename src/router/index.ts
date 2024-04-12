@@ -82,6 +82,7 @@ interface CheckSessionResponse {
 }
 
 router.beforeEach((to, _, next) => {
+  console.log(`Navigating to ${to.path}`);
   const authStore = useAuthStore();
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
   const requiresGuest = to.matched.some(record => record.meta.requiresGuest);
@@ -93,6 +94,8 @@ router.beforeEach((to, _, next) => {
   if (to.path === '/verify-email') console.assert(!requiresVerified, 'Verify email route must not require verification');
   if (to.path === '/error') console.assert(!requiresAuth && !requiresVerified, 'Error route must not require auth or verified');
 
+  console.log(`requiresAuth: ${requiresAuth}, requiresGuest: ${requiresGuest}, requiresVerified: ${requiresVerified}`)
+
   if (!requiresAuth && !requiresGuest && !requiresVerified) {
     next();
     return;
@@ -100,10 +103,16 @@ router.beforeEach((to, _, next) => {
 
   axios.get('/auth/check-session')
     .then(response => {
-      const data = response.data as CheckSessionResponse;
-
+      const data = response.data.data as CheckSessionResponse;
+      console.log(`Check Session Response: ${JSON.stringify(data)}`);
       if (data.loggedIn) {
         authStore.login();
+
+        if (requiresGuest) {
+          console.log(`User is logged in, page requiresGuest`); ``
+          next('/');
+          return;
+        }
 
         if (requiresVerified) {
           if (data.verified) {
@@ -115,10 +124,6 @@ router.beforeEach((to, _, next) => {
           }
         }
 
-        if (requiresGuest) {
-          next('/');
-          return;
-        }
 
         next();
       }
