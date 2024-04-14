@@ -4,7 +4,7 @@ axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL
 axios.defaults.withCredentials = true
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHistory(''),
   routes: [
     {
       path: '/login',
@@ -26,6 +26,30 @@ const router = createRouter({
           path: '',
           name: 'register',
           component: () => import('@/views/RegisterView.vue'),
+          meta: { requiresGuest: true }
+        }
+      ]
+    },
+    {
+      path: '/forgot-password',
+      component: () => import('@/layouts/UnauthenticatedLayout.vue'),
+      children: [
+        {
+          path: '',
+          name: 'forgot-password',
+          component: () => import('@/views/ForgotPassword.vue'),
+          meta: { requiresGuest: true }
+        }
+      ]
+    },
+    {
+      path: '/reset-password',
+      component: () => import('@/layouts/UnauthenticatedLayout.vue'),
+      children: [
+        {
+          path: '',
+          name: 'reset-password',
+          component: () => import('@/views/ResetPassword.vue'),
           meta: { requiresGuest: true }
         }
       ]
@@ -75,11 +99,8 @@ const router = createRouter({
 })
 
 import { useAuthStore } from '@/stores/auth'
+import type { ValidateSessionResponse } from '@/types/ValidateSessionResponse'
 
-interface CheckSessionResponse {
-  loggedIn: boolean;
-  verified: boolean;
-}
 
 router.beforeEach((to, _, next) => {
   console.log(`Navigating to ${to.path}`);
@@ -101,12 +122,12 @@ router.beforeEach((to, _, next) => {
     return;
   }
 
-  axios.get('/auth/check-session')
+  axios.get('/auth/validate-session')
     .then(response => {
-      const data = response.data.data as CheckSessionResponse;
+      const data = response.data.data as ValidateSessionResponse;
       console.log(`Check Session Response: ${JSON.stringify(data)}`);
       if (data.loggedIn) {
-        authStore.login();
+        authStore.login(data.user);
 
         if (requiresGuest) {
           console.log(`User is logged in, page requiresGuest`); ``

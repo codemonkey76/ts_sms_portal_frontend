@@ -3,14 +3,14 @@ import { defineStore } from 'pinia'
 
 export type AuthState = {
   authenticated: boolean;
-  user_data: UserData|null;
+  user_data: UserData | null;
 }
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     authenticated: false,
-    user_data: null as UserData|null,
-    error: null as string|null
+    user_data: null as UserData | null,
+    error: null as string | null
   }),
 
   getters: {
@@ -21,7 +21,8 @@ export const useAuthStore = defineStore('auth', {
   },
 
   actions: {
-    login(user_data?: UserData|null) {
+    login(user_data?: UserData | null) {
+      console.log("Got some user data", user_data)
       if (user_data) {
         this.user_data = user_data
       }

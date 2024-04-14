@@ -11,15 +11,18 @@ const handleLogin = () => {
   axios
     .post('/auth/register', form)
     .then((response) => {
+      console.log('Response', response)
+      console.log('Response.Data', response.data)
+      console.log('Response.Data.Data', response.data.data)
       useAuthStore().login(response.data.data)
-      router.push({name: "verify_email"})
+      router.push({ name: 'home' })
     })
     .catch((error) => {
       if (error.response.status === 422) {
         setErrors(error.response.data.errors)
       }
       console.log(error)
-    });
+    })
 }
 
 const form = reactive({
@@ -27,9 +30,9 @@ const form = reactive({
   email: '',
   invite_code: '',
   password: '',
-  password_confirmation: ''
-});
-
+  password_confirmation: '',
+  redirect_path: import.meta.env.VITE_BASE_URL + '/'
+})
 </script>
 <template>
   <div class="flex min-h-full flex-1 flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -47,7 +50,6 @@ const form = reactive({
     <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-[480px]">
       <div class="bg-white px-6 py-12 shadow sm:rounded-lg sm:px-12">
         <form class="space-y-4" @submit.prevent="handleLogin" action="#" method="POST">
-
           <div>
             <label for="name" class="block text-sm font-medium leading-6 text-gray-900">Name</label>
             <div class="mt-1">
@@ -68,7 +70,7 @@ const form = reactive({
 
           <div>
             <label for="email" class="block text-sm font-medium leading-6 text-gray-900"
-            >Email address</label
+              >Email address</label
             >
             <div class="mt-1">
               <input
@@ -88,7 +90,7 @@ const form = reactive({
 
           <div>
             <label for="invite_code" class="block text-sm font-medium leading-6 text-gray-900"
-            >Invite Code</label
+              >Invite Code</label
             >
             <div class="mt-1">
               <input
@@ -107,7 +109,7 @@ const form = reactive({
 
           <div>
             <label for="password" class="block text-sm font-medium leading-6 text-gray-900"
-            >Password</label
+              >Password</label
             >
             <div class="mt-1">
               <input
@@ -125,8 +127,10 @@ const form = reactive({
           </div>
 
           <div>
-            <label for="password_confirmation" class="block text-sm font-medium leading-6 text-gray-900"
-            >Confirm Password</label
+            <label
+              for="password_confirmation"
+              class="block text-sm font-medium leading-6 text-gray-900"
+              >Confirm Password</label
             >
             <div class="mt-2">
               <input
@@ -157,8 +161,11 @@ const form = reactive({
       <p class="mt-10 text-center text-sm text-gray-500">
         Already have an account?
         {{ ' ' }}
-        <router-link to="/login" class="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
-        >Login</router-link>
+        <router-link
+          to="/login"
+          class="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
+          >Login</router-link
+        >
       </p>
     </div>
   </div>

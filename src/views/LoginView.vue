@@ -26,20 +26,20 @@ const handleLogin = () => {
         setErrors(error.response.data.errors)
       }
       console.log(error)
-    });
+    })
 }
 
 const form = reactive({
   email: '',
   password: ''
-});
+})
 
 onMounted(() => {
   if (localStorage.getItem('userEmail')) {
-    form.email = localStorage.getItem('userEmail');
-    remember_me.value = true;
+    form.email = localStorage.getItem('userEmail')
+    remember_me.value = true
   }
-});
+})
 </script>
 <template>
   <div class="flex min-h-full flex-1 flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -112,7 +112,7 @@ onMounted(() => {
             </div>
 
             <div class="text-sm leading-6">
-              <a href="#" class="font-semibold text-indigo-600 hover:text-indigo-500"
+              <a href="/forgot-password" class="font-semibold text-indigo-600 hover:text-indigo-500"
                 >Forgot password?</a
               >
             </div>
@@ -132,8 +132,11 @@ onMounted(() => {
       <p class="mt-10 text-center text-sm text-gray-500">
         Not a member?
         {{ ' ' }}
-        <router-link to="/register" class="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
-          >Register</router-link>
+        <router-link
+          to="/register"
+          class="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
+          >Register</router-link
+        >
       </p>
     </div>
   </div>
