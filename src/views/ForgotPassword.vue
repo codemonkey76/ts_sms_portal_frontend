@@ -1,76 +1,83 @@
 <script setup lang="ts">
-import Frame from '@/components/Frame.vue'
-import { EnvelopeIcon } from '@heroicons/vue/24/solid'
-import { ref, reactive } from 'vue'
+import { useAuthStore } from '@/stores/auth'
+import useValidation from '@/composables/useValidation.ts'
+import ButtonPrimary from '@/components/buttons/ButtonPrimary.vue'
+import TextInput from '@/components/inputs/TextInput.vue'
+import IconLogo from '@/components/icons/IconLogo.vue'
+import NavLink from '@/components/NavLink.vue'
 import axios from 'axios'
+import { onMounted, reactive, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import Frame from '@/components/Frame.vue'
+const router = useRouter()
+const { errors, setErrors } = useValidation()
 
-const sent = ref(false)
-const form = reactive({
-  email: ''
-})
-const sendResetLink = () => {
+
+const handleReset = () => {
   axios
-    .post('/forgot-password', form)
-    .then(() => {
+    .post('/auth/request-password-reset', form)
+    .then((response) => {
       sent.value = true
+      email_sent.value = form.email
+      form.email = ''
     })
-    .catch((e) => {
-      console.error('Failed to send email')
-      console.error(e)
-      sent.value = false
+    .catch((error) => {
+      console.log(error)
+      if (error.response.status === 422) {
+        setErrors(error.response.data.errors)
+      }
+      console.log(error)
     })
 }
+
+const sent = ref(false)
+const email_sent = ref('')
+
+const form = reactive({
+  email: '',
+  redirect_path: import.meta.env.VITE_BASE_URL + '/reset-password'
+})
+
 </script>
 <template>
   <frame>
-    <div class="h-16 w-16 bg-sky-600 rounded-full flex items-center justify-center">
-      <envelope-icon class="w-10 h-10 text-sky-300 mx-auto" />
-    </div>
-    <h1 class="font-semibold text-gray-900 text-2xl">Forgot your password?</h1>
-    <p>
-      Remember your password?<a
-        href="/login"
-        class="text-sky-600/80 hover:underline font-semibold pl-2"
-        >Login here</a
-      >
-    </p>
-    <form @submit.prevent="sendResetLink" class="flex flex-col items-center">
-      <div
-        class="bg-white w-64 rounded-md px-3 pb-1.5 pt-2.5 shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-indigo-600"
-      >
-        <label for="email" class="block text-xs font-medium text-gray-900">Email address</label>
-        <input
-          type="email"
-          name="email"
-          id="email"
-          v-model="form.email"
-          required
-          class="block w-full border-0 p-0 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
-          placeholder="user@example.com"
-        />
+    <div class="flex min-h-full flex-1 flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <div class="sm:mx-auto sm:w-full sm:max-w-md">
+        <icon-logo class="mx-auto h-24 w-auto" />
+        <h2 class="mt-6 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
+          Reset password
+        </h2>
       </div>
-      <button
-        @click="resend"
-        v-if="!sent"
-        class="mt-2 px-4 py-2 rounded-md shadow border bg-sky-600 hover:bg-sky-700 text-white font-semibold"
-      >
-        Send Password Reset Link
-      </button>
-      <p v-else class="text-sm font-semibold text-green-600">
-        Email sent successfully. Please check your inbox.
-      </p>
-    </form>
 
-    <p class="text-center">
-      Click on the link to view the password reset form.<br />You might need to check your spam
-      folder.
-    </p>
-    <p class="text-sm text-gray-500">
-      You can reach us at
-      <a href="mailto:support@alphasg.com.au" class="text-sky-600/80 hover:underline font-semibold"
-        >support@alphasg.com.au</a
-      >
-      if you require assistance.
-    </p>
+      <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-[480px]">
+
+        <form class="space-y-6" @submit.prevent="handleReset" action="#" method="POST">
+
+          <text-input name="email" v-model="form.email" label="Email address" :has-error="errors.has('email')"
+            :error="errors.first('email')" type="email" required="" />
+
+
+
+          <div class="flex items-center justify-center">
+            <nav-link to="/login" class="text-sm mx-4">I remember my password</nav-link>
+          </div>
+
+          <div>
+            <button-primary v-if="!sent" class="w-full">
+              Send Reset Link
+            </button-primary>
+            <p v-else class="w-[300px] text-green-500 text-sm font-semibold mx-auto text-center">Email has been sent to
+              <span v-text="email_sent" />, click the link provided in the email to reset your password.
+            </p>
+          </div>
+        </form>
+
+        <p class="flex flex-col mt-10 text-center text-sm text-gray-500">
+          Require assistance?
+          {{ ' ' }}
+          <nav-link href="mailto:support@alphasg.com.au">support@alphasg.com.au</nav-link>
+        </p>
+      </div>
+    </div>
   </frame>
 </template>

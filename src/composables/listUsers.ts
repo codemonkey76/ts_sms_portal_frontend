@@ -8,7 +8,7 @@ import { watchDebounced } from '@vueuse/core';
 const listUsers = (props: Ref<PaginationOptions>) => {
   const loading = ref(false);
   const users = ref<User[]>([]);
-  const meta = ref<PaginatorProps|null>(null);
+  const meta = ref<PaginatorProps | null>(null);
 
   const fetchUsers = async () => {
     loading.value = true;
@@ -21,8 +21,8 @@ const listUsers = (props: Ref<PaginationOptions>) => {
         }
       })
       if (response) {
-        users.value = response.data.data;
-        meta.value = response.data.meta;
+        users.value = response.data.data.data;
+        meta.value = response.data.data.meta;
       }
     } catch (e) {
       console.error(e);
@@ -37,9 +37,9 @@ const listUsers = (props: Ref<PaginationOptions>) => {
 
   watchDebounced(() => props.value, async () => {
     await fetchUsers();
-  }, {debounce: 500, maxWait: 1000, immediate: true, deep: true});
+  }, { debounce: 500, maxWait: 1000, immediate: true, deep: true });
 
-  return {users, loading, meta, refresh}
+  return { users, loading, meta, refresh }
 }
 
 export default listUsers;
