@@ -52,26 +52,60 @@ const form = reactive({
 
       <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-[480px]">
         <form class="space-y-4" @submit.prevent="handleLogin" action="#" method="POST">
-          <text-input name="name" v-model="form.email" label="Name" :has-error="errors.has('name')"
-            :error="errors.first('name')" type="text" required="" autocomplete="name" />
+          <text-input
+            name="name"
+            v-model="form.name"
+            label="Name"
+            :has-error="errors.has('name')"
+            :error="errors.first('name')"
+            type="text"
+            required=""
+            autocomplete="name"
+          />
 
-          <text-input name="email" v-model="form.email" label="Email address" :has-error="errors.has('email')"
-            :error="errors.first('email')" type="email" required="" autocomplete="email" />
+          <text-input
+            name="email"
+            v-model="form.email"
+            label="Email address"
+            :has-error="errors.has('email')"
+            :error="errors.first('email')"
+            type="email"
+            required=""
+            autocomplete="email"
+          />
 
-          <text-input name="invite_code" v-model="form.invite_code" label="Invite code"
-            :has-error="errors.has('invite_code')" :error="errors.first('invite_code')" type="text" required="" />
+          <text-input
+            name="invite_code"
+            v-model="form.invite_code"
+            label="Invite code"
+            :has-error="errors.has('invite_code')"
+            :error="errors.first('invite_code')"
+            type="text"
+            required=""
+          />
 
-          <text-input name="password" v-model="form.password" label="Password" :has-error="errors.has('password')"
-            :error="errors.first('password')" type="password" required="" />
+          <text-input
+            name="password"
+            v-model="form.password"
+            label="Password"
+            :has-error="errors.has('password')"
+            :error="errors.first('password')"
+            type="password"
+            required=""
+          />
 
-          <text-input name="password_confirmation" v-model="form.password" label="Confirm password"
-            :has-error="errors.has('password_confirmation')" :error="errors.first('password_confirmation')"
-            type="password" required="" />
+          <text-input
+            name="password_confirmation"
+            v-model="form.password_confirmation"
+            label="Confirm password"
+            :has-error="errors.has('password_confirmation')"
+            :error="errors.first('password_confirmation')"
+            type="password"
+            required=""
+          />
 
           <div>
-            <button-primary class="w-full">
-              Create account
-            </button-primary>
+            <button-primary class="w-full"> Create account </button-primary>
           </div>
         </form>
 

@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import DialogModal from '@/components/DialogModal.vue';
-import ButtonPrimary from '@/components/buttons/ButtonPrimary.vue';
-import ButtonSecondary from '@/components/buttons/ButtonSecondary.vue';
+import DialogModal from '@/components/DialogModal.vue'
+import ButtonPrimary from '@/components/buttons/ButtonPrimary.vue'
+import ButtonSecondary from '@/components/buttons/ButtonSecondary.vue'
+import TextInput from '@/components/inputs/TextInput.vue'
+
 defineProps({
   show: Boolean
 })
@@ -9,18 +11,24 @@ defineProps({
 const emit = defineEmits(['close'])
 
 const handleClose = (e) => {
-  emit('close', e);
+  emit('close', e)
 }
 
 const handleSave = async () => {
-  console.log("Handling Save");
+  console.log('Handling Save')
 }
 </script>
 <template>
   <dialog-modal :show="show" @close="handleClose">
-    <template #title></template>
+    <template #title>
+      <div class="font-semibold text-xl">Edit User</div>
+    </template>
     <template #content>
-      <div>Foo</div>
+      <div class="space-y-4">
+        <text-input name="name" label="Name" />
+        <text-input name="email" label="Email" />
+        <text-input name="password" label="Password" />
+      </div>
     </template>
     <template #footer>
       <div class="flex justify-between">
