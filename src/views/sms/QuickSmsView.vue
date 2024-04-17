@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import ButtonPrimary from '@/components/buttons/ButtonPrimary.vue'
+import { CalendarDaysIcon } from '@heroicons/vue/24/solid'
+import popup from './popup.vue'
 </script>
 <template>
   <div class="bg-gray-100 p-8 h-full">
@@ -29,15 +31,24 @@ import ButtonPrimary from '@/components/buttons/ButtonPrimary.vue'
           <label for="send-now"
             class="flex border rounded-md items-center space-x-2 px-4 py-2 has-[:checked]:bg-sky-50 has-[:checked]:border-sky-600">
             <input id="send-now" name="push-notifications" type="radio"
-              class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600" />
+              class="h-4 w-4 border-gray-300 text-sky-600 focus:ring-sky-600" />
             <span class="block text-sm font-medium leading-6 text-gray-900">Now</span>
           </label>
           <label for="send-later"
             class="flex border rounded-md items-center space-x-2 px-4 py-2 has-[:checked]:bg-sky-50 has-[:checked]:border-sky-600">
             <input id="send-later" name="push-notifications" type="radio"
-              class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600" />
+              class="h-4 w-4 border-gray-300 text-sky-600 focus:ring-sky-600" />
             <span class="block text-sm font-medium leading-6 text-gray-900">Later</span>
           </label>
+          <div class="relative">
+            <input type="text"
+              class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
+              placeholder="Select date/time">
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+              <calendar-days-icon class="h-5 w-5 text-gray-400" />
+            </div>
+            <popup />
+          </div>
         </div>
       </div>
       <div class="flex justify-end">
