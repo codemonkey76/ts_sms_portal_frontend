@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { createRouter, createWebHistory } from 'vue-router'
+import { authGuard } from './authguard'
 axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL
 axios.defaults.withCredentials = true
 
@@ -74,6 +75,7 @@ const router = createRouter({
           path: '',
           name: 'error',
           component: () => import('@/views/ErrorView.vue'),
+          meta: {}
         }
       ]
     },
@@ -91,78 +93,32 @@ const router = createRouter({
           path: 'users',
           name: 'users',
           component: () => import('@/views/UsersView.vue'),
-          meta: { requiresAuth: true }
+          meta: { permission: 'users:list', requiresVerified: true }
+        },
+        {
+          path: 'customers',
+          name: 'customers',
+          component: () => import('@/views/CustomersView.vue'),
+          meta: { permission: 'customers:list', requiresVerified: true }
+        },
+        {
+          path: '/sms',
+          children: [
+            {
+              path: 'quick',
+              name: 'quick-sms',
+              component: () => import('@/views/sms/QuickSmsView.vue'),
+              meta: { permission: 'sms:send', requiresVerified: true }
+            }
+          ]
+
         }
+
       ]
     },
   ]
 })
 
-import { useAuthStore } from '@/stores/auth'
-import type { ValidateSessionResponse } from '@/types/ValidateSessionResponse'
+router.beforeEach(authGuard)
 
-
-router.beforeEach((to, _, next) => {
-  console.log(`Navigating to ${to.path}`);
-  const authStore = useAuthStore();
-  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
-  const requiresGuest = to.matched.some(record => record.meta.requiresGuest);
-  const requiresVerified = to.matched.some(record => record.meta.requiresVerified);
-
-  console.assert(!(requiresAuth && requiresGuest), "Route cannot require both auth and guest");
-  if (to.path === '/login') console.assert(!requiresAuth && !requiresVerified, 'Login route must not require auth or verified');
-  if (to.path === '/register') console.assert(!requiresAuth && !requiresVerified, 'Register route must not require auth or verified');
-  if (to.path === '/verify-email') console.assert(!requiresVerified, 'Verify email route must not require verification');
-  if (to.path === '/error') console.assert(!requiresAuth && !requiresVerified, 'Error route must not require auth or verified');
-
-  console.log(`requiresAuth: ${requiresAuth}, requiresGuest: ${requiresGuest}, requiresVerified: ${requiresVerified}`)
-
-  if (!requiresAuth && !requiresGuest && !requiresVerified) {
-    next();
-    return;
-  }
-
-  axios.get('/auth/validate-session')
-    .then(response => {
-      const data = response.data.data as ValidateSessionResponse;
-      console.log(`Check Session Response: ${JSON.stringify(data)}`);
-      if (data.loggedIn) {
-        authStore.login(data.user);
-
-        if (requiresGuest) {
-          console.log(`User is logged in, page requiresGuest`); ``
-          next('/');
-          return;
-        }
-
-        if (requiresVerified) {
-          if (data.verified) {
-            next();
-            return;
-          } else {
-            next('/verify-email')
-            return;
-          }
-        }
-
-
-        next();
-      }
-      else {
-        authStore.logout();
-
-        if (requiresAuth || requiresVerified) {
-          next('/login');
-          return;
-        }
-
-        next();
-      }
-    })
-    .catch(e => {
-      authStore.logout();
-      authStore.setError("Unable to check if user session exists!<br>Server may be down, try again later.");
-      next('/error');
-    });
-});
 export default router

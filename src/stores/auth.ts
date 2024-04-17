@@ -15,14 +15,19 @@ export const useAuthStore = defineStore('auth', {
 
   getters: {
     isAuthenticated: (state: AuthState) => state.authenticated,
-    can: (state: AuthState) => (permission: string) => {
-      return state.user_data?.permissions.includes(permission) || false
+    can: (state: AuthState) => (permission: string | string[] | undefined) => {
+      console.log('Checking permission', permission)
+      if (!permission || permission.length === 0 || (Array.isArray(permission) && permission.every(p => !p))) return true;
+      console.log("not blank", permission)
+
+      const permissionsToCheck = typeof permission === 'string' ? [permission] : permission;
+
+      return permissionsToCheck.every(perm => state.user_data?.permissions.includes(perm))
     }
   },
 
   actions: {
     login(user_data?: UserData | null) {
-      console.log("Got some user data", user_data)
       if (user_data) {
         this.user_data = user_data
       }
