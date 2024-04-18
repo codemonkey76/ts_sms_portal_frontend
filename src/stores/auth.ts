@@ -2,8 +2,8 @@ import type { UserData } from '@/Types/User'
 import { defineStore } from 'pinia'
 
 export type AuthState = {
-  authenticated: boolean;
-  user_data: UserData | null;
+  authenticated: boolean
+  user_data: UserData | null
 }
 
 export const useAuthStore = defineStore('auth', {
@@ -16,13 +16,16 @@ export const useAuthStore = defineStore('auth', {
   getters: {
     isAuthenticated: (state: AuthState) => state.authenticated,
     can: (state: AuthState) => (permission: string | string[] | undefined) => {
-      console.log('Checking permission', permission)
-      if (!permission || permission.length === 0 || (Array.isArray(permission) && permission.every(p => !p))) return true;
-      console.log("not blank", permission)
+      if (
+        !permission ||
+        permission.length === 0 ||
+        (Array.isArray(permission) && permission.every((p) => !p))
+      )
+        return true
 
-      const permissionsToCheck = typeof permission === 'string' ? [permission] : permission;
+      const permissionsToCheck = typeof permission === 'string' ? [permission] : permission
 
-      return permissionsToCheck.every(perm => state.user_data?.permissions.includes(perm))
+      return permissionsToCheck.every((perm) => state.user_data?.permissions.includes(perm))
     }
   },
 
