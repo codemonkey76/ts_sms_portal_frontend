@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useAuthStore } from '@/stores/auth'
-import useValidation from '@/composables/useValidation.ts'
+import useValidation from '@/composables/useValidation'
 import ButtonPrimary from '@/components/buttons/ButtonPrimary.vue'
 import TextInput from '@/components/inputs/TextInput.vue'
 import IconLogo from '@/components/icons/IconLogo.vue'
@@ -41,7 +41,7 @@ const form = reactive({
 
 onMounted(() => {
   if (localStorage.getItem('userEmail')) {
-    form.email = localStorage.getItem('userEmail')
+    form.email = localStorage.getItem('userEmail') || ''
     remember_me.value = true
   }
 })
@@ -69,7 +69,7 @@ onMounted(() => {
           <div class="flex items-center justify-between">
             <div class="flex items-center">
               <input v-model="remember_me" id="remember-me" name="remember-me" type="checkbox"
-                class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
+                class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-600" />
               <label for="remember-me" class="ml-3 block text-sm leading-6 text-gray-900">Remember me</label>
             </div>
 

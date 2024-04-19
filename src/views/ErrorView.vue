@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 
 import { XCircleIcon } from '@heroicons/vue/24/solid'
 import { useAuthStore } from '@/stores/auth'
@@ -21,7 +21,7 @@ watch(() => store.error, (newError) => {
 
 <template>
   <div class="relative flex min-h-screen flex-col justify-center overflow-hidden bg-gray-50 py-6 sm:py-12">
-    <div class="absolute inset-0 bg-[url(/img/grid.svg)] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]"></div>
+    <div class="absolute inset-0 bg-center"></div>
     <div class="relative bg-white px-6 pt-10 pb-8 shadow-xl ring-1 ring-gray-900/5 sm:mx-auto sm:max-w-lg sm:rounded-lg sm:px-10">
       <div class="mx-auto max-w-md">
         <div class="flex space-x-2">
@@ -39,7 +39,7 @@ watch(() => store.error, (newError) => {
           <div class="pt-8 text-base font-semibold leading-7">
             <p class="text-gray-900">If you see this error message, please report it</p>
             <p>
-              <a href="mailto:support@alphasg.com.au" class="text-sky-500 hover:text-sky-600">Email Support</a>
+              <a class="text-primary-500 hover:text-primary-600" href="mailto:support@alphasg.com.au">Email Support</a>
             </p>
           </div>
         </div>

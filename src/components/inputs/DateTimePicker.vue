@@ -33,10 +33,10 @@ const formatDate = (date: Date) => {
 const model = defineModel<Date>()
 </script>
 <template>
-  <div class="relative">
+  <div class="relative bg-white/5">
     <input
       :value="dateTimeString"
-      class="block w-full rounded-md border-0 py-1.5 pr-6 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
+      class="block w-full rounded-md border-0 py-1.5 pr-6 bg-transparent dark:text-white text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-white/10 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6"
       placeholder="Select date/time"
       type="text"
       @click="openModal"

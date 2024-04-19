@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import type { PaginatorLink } from '@/types/PaginatorLink'
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/20/solid';
 import { usePagination } from '@/composables/usePagination'
@@ -36,8 +36,8 @@ const pageOptions = [10, 25, 50, 100];
 <template>
   <div v-if="meta" class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
     <div class="flex flex-1 justify-between sm:hidden">
-      <a href="#" class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Previous</a>
-      <a href="#" class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Next</a>
+      <a class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" href="#">Previous</a>
+      <a class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" href="#">Next</a>
     </div>
     <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
       <div>
@@ -62,56 +62,56 @@ const pageOptions = [10, 25, 50, 100];
           <label class="rounded-l-md relative inline-flex items-center px-2 py-2 text-sm font-medium text-gray-700 focus:z-20 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0">Per page:</label>
           <template v-for="(option, index) in pageOptions" :key="index">
           <a
-            :href="option!=props.meta.per_page ? '#' : undefined"
-            @click="handlePerPageChange(option)"
-            class="relative inline-flex items-center px-4 py-2 text-sm font-semibold focus:z-20"
             :class="{
-                'z-10 bg-indigo-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600' : option==props.meta.per_page,
+                'z-10 bg-primary-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600' : option==props.meta.per_page,
                 'ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0': option!=props.meta.per_page,
                 'text-gray-900': option==props.meta.per_page,
                 'rounded-r-md': index == pageOptions.length - 1
                 }"
+            :href="option!=props.meta.per_page ? '#' : undefined"
+            class="relative inline-flex items-center px-4 py-2 text-sm font-semibold focus:z-20"
+            @click="handlePerPageChange(option)"
           >{{ option }}</a>
           </template>
         </nav>
       </div>
       <div>
-        <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+        <nav aria-label="Pagination" class="isolate inline-flex -space-x-px rounded-md shadow-sm">
           <a
-            @click.prevent="hasPrevious && changePage(props.meta.current_page - 1)"
+            :class="hasPrevious ? 'tet-gray-900' : 'text-gray-400'"
             :href="hasPrevious ? '#' : undefined"
             class="rounded-l-md relative inline-flex items-center px-2 py-2 text-sm font-semibold focus:z-20 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0"
-            :class="hasPrevious ? 'tet-gray-900' : 'text-gray-400'"
+            @click.prevent="hasPrevious && changePage(props.meta.current_page - 1)"
           >
             <span class="sr-only">Previous</span>
-            <ChevronLeftIcon class="h-5 w-5" aria-hidden="true" />
+            <ChevronLeftIcon aria-hidden="true" class="h-5 w-5" />
           </a>
 
           <template v-for="(link, index) in links" :key="index">
             <a
-              @click.prevent="link.value && !link.current && changePage(link.value)"
-              :href="link.value && !link.current ? '#' : undefined"
               :aria-current="link.current ? 'page' : undefined"
-              class="relative inline-flex items-center px-4 py-2 text-sm font-semibold focus:z-20"
               :class="{
-                'z-10 bg-indigo-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600' : link.current,
+                'z-10 bg-primary-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600' : link.current,
                 'ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0': !link.current,
                 'text-gray-900': link.value,
                 'text-gray-400': !link.value
                 }"
+              :href="link.value && !link.current ? '#' : undefined"
+              class="relative inline-flex items-center px-4 py-2 text-sm font-semibold focus:z-20"
               v-html="link.label"
+              @click.prevent="link.value && !link.current && changePage(link.value)"
             ></a>
 
 
           </template>
           <a
-            @click.prevent="hasNext && changePage(props.meta.current_page + 1)"
+            :class="hasNext ? 'tet-gray-900' : 'text-gray-400'"
             :href="hasNext ? '#' : undefined"
             class="rounded-r-md relative inline-flex items-center px-2 py-2 text-sm font-semibold focus:z-20 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0"
-            :class="hasNext ? 'tet-gray-900' : 'text-gray-400'"
+            @click.prevent="hasNext && changePage(props.meta.current_page + 1)"
           >
             <span class="sr-only">Previous</span>
-            <ChevronRightIcon class="h-5 w-5" aria-hidden="true" />
+            <ChevronRightIcon aria-hidden="true" class="h-5 w-5" />
           </a>
         </nav>
       </div>

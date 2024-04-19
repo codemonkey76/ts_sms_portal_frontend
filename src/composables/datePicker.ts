@@ -1,4 +1,4 @@
-import { reactive } from 'vue'
+import { computed, reactive, watch } from 'vue'
 
 const state = reactive<DatePickerState>({
   mode: 'day',
@@ -7,6 +7,49 @@ const state = reactive<DatePickerState>({
   chunkedLinks: [],
   clockFace: []
 })
+
+
+const pageTitle = computed(() => {
+  switch (state.mode) {
+    case 'year': {
+      if (state.chunkedLinks.length === 0 || state.chunkedLinks[0].length === 0) {
+        return 'no-data'
+      }
+      const first = state.chunkedLinks[0][0].date.getFullYear()
+      const lastSubArray = state.chunkedLinks[state.chunkedLinks.length - 1]
+      const last = lastSubArray[lastSubArray.length - 1].date.getFullYear()
+      return `${first} - ${last}`
+    }
+    case 'day':
+      return `${getMonthName(state.selected, true)} ${state.selected.getFullYear()}`
+    case 'hour':
+      return state.selected.getHours().toString()
+    case 'minute':
+      return state.selected.getMinutes().toString()
+    case 'month':
+      return state.selected.getFullYear().toString()
+    default:
+      return ''
+  }
+})
+
+const selectedDigit = computed(() => {
+
+  let digit: ClockDigit
+
+  switch (state.mode) {
+    case 'hour':
+      digit = state.clockFace.find((digit) => digit.value === state.selected.getHours())!
+      break;
+    default: {
+      const minute = Math.floor(state.selected.getMinutes() / 5) * 5
+      digit = state.clockFace.find((digit) => digit.value === minute)!
+    }
+      break;
+  }
+
+  return digit
+});
 
 /**
  * DatePickerState represents the state of the date picker
@@ -38,6 +81,8 @@ interface CalendarLink {
 interface ClockDigit {
   style: string
   label: string
+  value: number
+  rotation: number
 }
 
 /**
@@ -131,18 +176,18 @@ function getMonthName(date: Date, short: boolean = false): string {
 function hourFace(): ClockDigits {
   const face: ClockDigits = []
 
-  face.push({ style: 'left: 114px; bottom: 224px', label: '12' })
-  face.push({ style: 'left: 169px; bottom: 209.263px', label: '1' })
-  face.push({ style: 'left: 209.263px; bottom: 169px', label: '2' })
-  face.push({ style: 'left: 224px; bottom: 114px', label: '3' })
-  face.push({ style: 'left: 209.263px; bottom: 59px', label: '4' })
-  face.push({ style: 'left: 169px; bottom: 18.7372px', label: '5' })
-  face.push({ style: 'left: 114px; bottom: 4px', label: '6' })
-  face.push({ style: 'left: 59px; bottom: 18.7372px', label: '7' })
-  face.push({ style: 'left: 18.7372px; bottom: 59px', label: '8' })
-  face.push({ style: 'left: 4px; bottom: 114px', label: '9' })
-  face.push({ style: 'left: 18.7372px; bottom: 169px', label: '10' })
-  face.push({ style: 'left: 59px; bottom: 209.263px', label: '11' })
+  face.push({ style: 'left: 114px; bottom: 224px', label: '12', value: 12, rotation: 0 })
+  face.push({ style: 'left: 169px; bottom: 209.263px', label: '1', value: 1, rotation: 30 })
+  face.push({ style: 'left: 209.263px; bottom: 169px', label: '2', value: 2, rotation: 60 })
+  face.push({ style: 'left: 224px; bottom: 114px', label: '3', value: 3, rotation: 90 })
+  face.push({ style: 'left: 209.263px; bottom: 59px', label: '4', value: 4, rotation: 120 })
+  face.push({ style: 'left: 169px; bottom: 18.7372px', label: '5', value: 5, rotation: 150 })
+  face.push({ style: 'left: 114px; bottom: 4px', label: '6', value: 6, rotation: 180 })
+  face.push({ style: 'left: 59px; bottom: 18.7372px', label: '7', value: 7, rotation: 210 })
+  face.push({ style: 'left: 18.7372px; bottom: 59px', label: '8', value: 8, rotation: 240 })
+  face.push({ style: 'left: 4px; bottom: 114px', label: '9', value: 9, rotation: 270 })
+  face.push({ style: 'left: 18.7372px; bottom: 169px', label: '10', value: 10, rotation: 300 })
+  face.push({ style: 'left: 59px; bottom: 209.263px', label: '11', value: 11, rotation: 330 })
 
   return face
 }
@@ -153,18 +198,18 @@ function hourFace(): ClockDigits {
 function minuteFace(): ClockDigits {
   const face: ClockDigits = []
 
-  face.push({ style: 'left: 114px; bottom: 224px', label: '00' })
-  face.push({ style: 'left: 169px; bottom: 209.263px', label: '05' })
-  face.push({ style: 'left: 209.263px; bottom: 169px', label: '10' })
-  face.push({ style: 'left: 224px; bottom: 114px', label: '15' })
-  face.push({ style: 'left: 209.263px; bottom: 59px', label: '20' })
-  face.push({ style: 'left: 169px; bottom: 18.7372px', label: '25' })
-  face.push({ style: 'left: 114px; bottom: 4px', label: '30' })
-  face.push({ style: 'left: 59px; bottom: 18.7372px', label: '35' })
-  face.push({ style: 'left: 18.7372px; bottom: 59px', label: '40' })
-  face.push({ style: 'left: 4px; bottom: 114px', label: '45' })
-  face.push({ style: 'left: 18.7372px; bottom: 169px', label: '50' })
-  face.push({ style: 'left: 59px; bottom: 209.263px', label: '55' })
+  face.push({ style: 'left: 114px; bottom: 224px', label: '00', value: 0, rotation: 0 })
+  face.push({ style: 'left: 169px; bottom: 209.263px', label: '05', value: 5, rotation: 30 })
+  face.push({ style: 'left: 209.263px; bottom: 169px', label: '10', value: 10, rotation: 60 })
+  face.push({ style: 'left: 224px; bottom: 114px', label: '15', value: 15, rotation: 90 })
+  face.push({ style: 'left: 209.263px; bottom: 59px', label: '20', value: 20, rotation: 120 })
+  face.push({ style: 'left: 169px; bottom: 18.7372px', label: '25', value: 25, rotation: 150 })
+  face.push({ style: 'left: 114px; bottom: 4px', label: '30', value: 30, rotation: 180 })
+  face.push({ style: 'left: 59px; bottom: 18.7372px', label: '35', value: 35, rotation: 210 })
+  face.push({ style: 'left: 18.7372px; bottom: 59px', label: '40', value: 40, rotation: 240 })
+  face.push({ style: 'left: 4px; bottom: 114px', label: '45', value: 45, rotation: 270 })
+  face.push({ style: 'left: 18.7372px; bottom: 169px', label: '50', value: 50, rotation: 300 })
+  face.push({ style: 'left: 59px; bottom: 209.263px', label: '55', value: 55, rotation: 330 })
 
   return face
 }
@@ -234,13 +279,12 @@ function getCalendarLinks(date: Date): CalendarLink[] {
  * Get the years for the given date
  */
 function getCalendarLinkYears(date: Date): CalendarLink[] {
-  // 24 years will be returned at a time
-  const currentYearPosition = date.getFullYear() % 24
   const years: CalendarLink[] = []
+  const start = date.getFullYear()-(date.getFullYear() % 24)
 
-  for (let i = 0; i < 24; i++) {
+  for (let i = start; i < start+24; i++) {
     const d = new Date(date)
-    date.setFullYear(date.getFullYear() - currentYearPosition + i)
+    d.setFullYear(i)
     years.push({ date: d, enabled: true })
   }
 
@@ -262,11 +306,60 @@ function getCalendarLinkMonths(date: Date): CalendarLink[] {
 }
 
 /**
+ * Set the time to AM
+ */
+function setAM() {
+  state.selected.setHours(state.selected.getHours() % 12)
+  state.selected = new Date(state.selected.getTime())
+}
+
+/**
+ * Set the time to PM
+ */
+function setPM() {
+  state.selected.setHours(state.selected.getHours() % 12 + 12)
+  state.selected = new Date(state.selected.getTime())
+}
+
+/**
+ * Set the digit of the selected date
+ */
+function setDigit(digit: ClockDigit) {
+  switch (state.mode) {
+    case 'hour':
+      setHour(digit.value)
+      state.mode = 'minute'
+      break
+
+    case 'minute':
+      setMinute(digit.value)
+      break
+  }
+}
+
+/**
+  * Set the hour of the selected date
+ */
+function setHour(hour: number) {
+  state.selected.setHours(hour)
+  state.selected = new Date(state.selected.getTime())
+}
+
+/**
+ * Set the minute of the selected date
+ */
+function setMinute(minute: number) {
+  state.selected.setMinutes(minute)
+  state.selected = new Date(state.selected.getTime())
+}
+
+/**
  * Set the day of the selectedDate
  */
 function setDate(date: Date) {
   state.selected.setFullYear(date.getFullYear(), date.getMonth(), date.getDate())
   state.selected = new Date(state.selected.getTime())
+  state.mode = 'hour'
 }
 
 /**
@@ -276,6 +369,7 @@ function setMonth(date: Date) {
   state.selected.setFullYear(date.getFullYear())
   state.selected.setMonth(date.getMonth())
   state.selected = new Date(state.selected.getTime())
+  state.mode = 'day'
 }
 
 /**
@@ -284,6 +378,28 @@ function setMonth(date: Date) {
 function setYear(date: Date) {
   state.selected.setFullYear(date.getFullYear())
   state.selected = new Date(state.selected.getTime())
+  state.mode = 'month'
+}
+
+/**
+ * Select the previous year page
+ */
+function prevYearPage() {
+  const year = state.selected.getFullYear()
+  state.selected.setFullYear(year-year%24-1)
+  state.selected = new Date(state.selected.getTime())
+  loadYears()
+}
+
+
+/**
+ * Select the next year page
+ */
+function nextYearPage() {
+  const year = state.selected.getFullYear()
+  state.selected.setFullYear(year+24  - year%24)
+  state.selected = new Date(state.selected.getTime())
+  loadYears()
 }
 
 /**
@@ -292,6 +408,7 @@ function setYear(date: Date) {
 function prevYear() {
   state.selected.setFullYear(state.selected.getFullYear() - 1)
   state.selected = new Date(state.selected.getTime())
+  loadMonths()
 }
 
 /**
@@ -300,7 +417,51 @@ function prevYear() {
 function nextYear() {
   state.selected.setFullYear(state.selected.getFullYear() + 1)
   state.selected = new Date(state.selected.getTime())
+  loadMonths()
 }
+
+/**
+ * Select the previous month
+ */
+function prevMonth() {
+  state.selected.setMonth(state.selected.getMonth() - 1)
+  state.selected = new Date(state.selected.getTime())
+  loadDays()
+}
+
+/**
+ * Select the next month
+ */
+function nextMonth() {
+  state.selected.setMonth(state.selected.getMonth() + 1)
+  state.selected = new Date(state.selected.getTime())
+  loadDays()
+}
+
+
+/**
+ * Show the next page of calendar links
+ */
+function nextPage(): void {
+  switch (state.mode) {
+    case 'year': return nextYearPage()
+    case 'month': return nextYear()
+    case 'day': return nextMonth()
+  }
+}
+
+/**
+ * Show the previous page of calendar links
+ */
+function prevPage(): void {
+  switch (state.mode) {
+    case 'year': return prevYearPage()
+    case 'month': return prevYear()
+    case 'day': return prevMonth()
+  }
+}
+
+
 
 /**
  * Initialize the date picker
@@ -310,8 +471,42 @@ function init() {
   state.chunkedLinks = chunk(state.links, 7)
 }
 
+function loadYears() {
+  state.links = getCalendarLinkYears(state.selected)
+  state.chunkedLinks = chunk(state.links, 4)
+}
+
+function loadMonths() {
+  state.links = getCalendarLinkMonths(state.selected)
+  state.chunkedLinks = chunk(state.links, 4)
+}
+
+function loadDays() {
+  state.links = getCalendarLinks(state.selected)
+  state.chunkedLinks = chunk(state.links, 7)
+}
+
+function loadHours() {
+  state.clockFace = hourFace()
+}
+
+function loadMinutes() {
+  state.clockFace = minuteFace()
+}
+
+watch(() => state.mode, (mode) => {
+  switch (mode) {
+    case 'year': return loadYears()
+    case 'month': return loadMonths()
+    case 'day': return loadDays()
+    case 'hour': return loadHours()
+    case 'minute': return loadMinutes()
+  }
+})
 export {
   state,
+  pageTitle,
+  selectedDigit,
   type DatePickerState,
   type DatePickerMode,
   type CalendarLink,
@@ -333,10 +528,17 @@ export {
   getCalendarLinks,
   getCalendarLinkYears,
   getCalendarLinkMonths,
+  setAM,
+  setPM,
+  setDigit,
+  setMinute,
+  setHour,
   setDate,
   setMonth,
   setYear,
   prevYear,
   nextYear,
+  nextPage,
+  prevPage,
   init
 }

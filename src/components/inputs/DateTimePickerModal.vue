@@ -6,8 +6,14 @@ import {
   ChevronRightIcon,
   ClockIcon
 } from '@heroicons/vue/24/solid'
-import { computed, defineEmits, onMounted, watch } from 'vue'
+import { computed, onMounted, watch } from 'vue'
 import * as picker from '@/composables/datePicker'
+const { state, pageTitle, selectedDigit, setDigit, setAM, setPM } = picker;
+
+
+const toggleState = () => {
+  state.mode = state.mode === 'day' ? 'year' : 'day';
+}
 
 const props = defineProps({
   show: Boolean
@@ -17,6 +23,11 @@ const emit = defineEmits(['close'])
 
 const handleClose = () => {
   emit('close')
+}
+
+const handleOK = () => {
+  model.value = state.selected
+  handleClose()
 }
 
 const model = defineModel<Date | undefined>()
@@ -29,31 +40,14 @@ watch(
   () => props.show,
   (show) => {
     if (show) {
-      picker.state.selected = model.value || new Date()
+      state.selected = model.value || new Date()
     }
   }
 )
 
-const pageTitle = computed(() => {
-  switch (picker.state.mode) {
-    case 'year': {
-      if (picker.state.chunkedLinks.length === 0 || picker.state.chunkedLinks[0].length === 0) {
-        return 'no-data'
-      }
-      const first = picker.state.chunkedLinks[0][0].date.getFullYear()
-      const lastSubArray = picker.state.chunkedLinks[picker.state.chunkedLinks.length - 1]
-      const last = lastSubArray[lastSubArray.length - 1].date.getFullYear()
-      return `${first} - ${last}`
-    }
-    case 'day':
-      return `${picker.getMonthName(picker.state.selected, true)} ${picker.state.selected.getFullYear()}`
-    case 'hour':
-      return picker.state.selected.getHours()
-    case 'minute':
-      return picker.state.selected.getMinutes()
-    default:
-      return ''
-  }
+const formatMinutes = computed(() => {
+  const mins = state.selected.getMinutes()
+  return mins < 10 ? `0${mins}` : `${mins}`
 })
 onMounted(() => {
   picker.init()
@@ -91,22 +85,48 @@ onMounted(() => {
       >
         <div class="flex flex-col">
           <!-- Header //-->
-          <div class="bg-sky-600 text-white px-4 py-2 rounded-t-md">
-            <div class="text-xs uppercase tracking-wide">Select date</div>
-            <div
-              class="text-2xl font-semibold py-2 px-4"
-              v-text="picker.formatDate(picker.state.selected)"
-            />
+          <div class="dark:bg-gray-700 bg-primary-600 text-white px-4 py-2 rounded-t-md">
+            <!-- Date Header //-->
+            <div v-if="state.mode === 'year' || state.mode ==='month' || state.mode === 'day'">
+              <div class="text-xs uppercase tracking-wide">Select date</div>
+              <div
+                class="text-2xl font-semibold py-2 px-4"
+                v-text="picker.formatDate(state.selected)"
+              />
+            </div>
+            <!-- Date Header //-->
+
+            <!-- Time Header //-->
+            <div v-else class="flex items-center justify-center text-7xl sans space-x-1">
+              <button :class="{'text-primary-200 dark:text-gray-400': state.mode === 'hour'}"
+                class="hover:bg-primary-700 dark:hover:bg-gray-800/50 rounded-md p-1"
+                @click="state.mode = 'hour'"
+                v-text="state.selected.getHours() % 12 || 12"
+              />
+              <div>:</div>
+              <button
+                :class="{'text-primary-200 dark:text-gray-400': state.mode === 'minute'}"
+                class="hover:bg-primary-700 dark:hover:bg-gray-800/50 rounded-md p-1"
+                @click="state.mode = 'minute'"
+                v-text="formatMinutes"
+              />
+              <div class="flex flex-col text-lg">
+                <button :class="{'text-primary-200 dark:text-gray-400': state.selected.getHours()<12}" class="hover:bg-primary-700 dark:hover:bg-gray-800/50 rounded-md p-1 uppercase" @click="setAM">am</button>
+                <button :class="{'text-primary-200 dark:text-gray-400': state.selected.getHours()>=12}" class="hover:bg-primary-700 dark:hover:bg-gray-800/50 rounded-md p-1 uppercase" @click="setPM">pm</button>
+              </div>
+            </div>
+            <!-- Time Header //-->
+
             <div class="flex justify-between">
               <button
-                class="px-10 py-2 hover:bg-sky-700 rounded-lg"
-                @click="picker.state.mode = 'day'"
+                class="px-10 py-2 dark:hover:bg-gray-800/50 hover:bg-primary-700 rounded-lg"
+                @click="state.mode = 'day'"
               >
                 <calendar-icon class="h-5 w-5" />
               </button>
               <button
-                class="px-10 py-2 hover:bg-sky-700 rounded-lg"
-                @click="picker.state.mode = 'hour'"
+                class="px-10 py-2 dark:hover:bg-gray-800/50 hover:bg-primary-700 rounded-lg"
+                @click="state.mode = 'hour'"
               >
                 <clock-icon class="h-5 w-5" />
               </button>
@@ -115,24 +135,24 @@ onMounted(() => {
           <!-- Header //-->
 
           <!-- Content //-->
-          <div class="bg-white rounded-b-md flex flex-col px-2">
+          <div class="dark:bg-gray-600 dark:text-white bg-white rounded-b-md flex flex-col px-2">
             <!-- Controls //-->
             <div
-              v-if="picker.state.mode !== 'hour' && picker.state.mode !== 'minute'"
-              class="flex justify-between py-4 px-2"
+              v-if="state.mode !== 'hour' && state.mode !== 'minute'"
+              class="flex justify-between py-4 px-2 items-center"
             >
               <button
-                class="text-sm flex space-x-1 items-center font-semibold text-gray-700 hover:bg-gray-200 px-2 py-2 rounded-md"
-                @click="picker.state.mode = picker.state.mode === 'month' ? 'year' : 'month'"
+                class="text-sm flex space-x-1 items-center font-semibold dark:text-gray-100 text-gray-700 dark:hover:bg-gray-700 hover:bg-gray-200 px-2 py-2 rounded-md"
+                @click="toggleState"
               >
-                <span v-text="pageTitle" />
-                <chevron-down-icon class="h-4 w-4 text-gray-600" />
+                <span>{{ pageTitle }}</span>
+                <chevron-down-icon class="h-4 w-4 dark:text-white text-gray-600" />
               </button>
               <div class="space-x-6">
-                <button class="hover:bg-gray-200 rounded-full p-2 text-gray-600" @click="prev">
+                <button class="dark:hover:bg-gray-700 hover:bg-gray-200 rounded-full p-2 text-gray-600 dark:text-white" @click="picker.prevPage">
                   <chevron-left-icon class="h-4 w-4" />
                 </button>
-                <button class="hover:bg-gray-200 rounded-full p-2 text-gray-600" @click="next">
+                <button class="dark:hover:bg-gray-700 hover:bg-gray-200 rounded-full p-2 text-gray-600 dark:text-white" @click="picker.nextPage">
                   <chevron-right-icon class="h-4 w-4" />
                 </button>
               </div>
@@ -141,8 +161,8 @@ onMounted(() => {
 
             <!-- Calendar //-->
             <div
-              v-if="picker.state.mode === 'day'"
-              class="space-y-2 text-sm text-gray-700 text-center"
+              v-if="state.mode === 'day'"
+              class="space-y-2 text-sm dark:text-gray-200 text-gray-700 text-center"
             >
               <div class="grid grid-cols-7 gap-1">
                 <span class="p-2">S</span>
@@ -154,7 +174,7 @@ onMounted(() => {
                 <span class="p-2">S</span>
               </div>
               <div
-                v-for="(week, weekIndex) in picker.state.chunkedLinks"
+                v-for="(week, weekIndex) in state.chunkedLinks"
                 :key="'row-' + weekIndex"
                 class="grid grid-cols-7 gap-1"
               >
@@ -165,9 +185,9 @@ onMounted(() => {
                   <button
                     v-if="date.enabled"
                     :class="{
-                      'border border-sky-600': picker.isToday(date.date),
-                      'bg-sky-600 text-white': picker.isSameDate(date.date, picker.state.selected),
-                      'hover:bg-gray-200': !picker.isSameDate(date.date, picker.state.selected)
+                      'border dark:border-gray-400 border-primary-600': picker.isToday(date.date),
+                      'bg-primary-600 dark:bg-gray-700 text-white': picker.isSameDate(date.date, state.selected),
+                      'hover:bg-gray-200 dark:hover:bg-gray-700/50': !picker.isSameDate(date.date, state.selected)
                     }"
                     class="p-2 rounded-full"
                     @click="picker.setDate(date.date)"
@@ -182,11 +202,11 @@ onMounted(() => {
 
             <!-- Year Chooser //-->
             <div
-              v-if="picker.state.mode === 'year'"
-              class="space-y-2 text-sm text-gray-700 text-center"
+              v-if="state.mode === 'year'"
+              class="space-y-2 text-sm dark:text-gray-200 text-gray-700 text-center"
             >
               <div
-                v-for="(group, groupIndex) in picker.state.chunkedLinks"
+                v-for="(group, groupIndex) in state.chunkedLinks"
                 :key="'row-' + groupIndex"
                 class="grid grid-cols-4 gap-1"
               >
@@ -196,9 +216,9 @@ onMounted(() => {
                 >
                   <button
                     :class="{
-                      'border border-sky-600': picker.isThisYear(year.date),
-                      'bg-sky-600 text-white': picker.isSameYear(year.date, picker.state.selected),
-                      'hover:bg-gray-200': !picker.isSameYear(year.date, picker.state.selected)
+                      'border dark:border-gray-400 border-primary-600': picker.isThisYear(year.date),
+                      'bg-primary-600 dark:bg-gray-700 text-white': picker.isSameYear(year.date, state.selected),
+                      'hover:bg-gray-200 dark:hover:bg-gray-700/50': !picker.isSameYear(year.date, state.selected)
                     }"
                     class="p-2 rounded-full"
                     @click="picker.setYear(year.date)"
@@ -212,11 +232,11 @@ onMounted(() => {
 
             <!-- Month Chooser //-->
             <div
-              v-if="picker.state.mode === 'month'"
-              class="space-y-2 text-sm text-gray-700 text-center"
+              v-if="state.mode === 'month'"
+              class="space-y-2 text-sm dark:text-gray-200 text-gray-700 text-center"
             >
               <div
-                v-for="(group, groupIndex) in picker.state.chunkedLinks"
+                v-for="(group, groupIndex) in state.chunkedLinks"
                 :key="'row-' + groupIndex"
                 class="grid grid-cols-4 gap-1"
               >
@@ -226,12 +246,12 @@ onMounted(() => {
                 >
                   <button
                     :class="{
-                      'border border-sky-600': picker.isThisMonth(month.date),
-                      'bg-sky-600 text-white': picker.isSameMonth(
+                      'border dark:border-gray-400 border-primary-600': picker.isThisMonth(month.date),
+                      'bg-primary-600 dark:bg-gray-700 text-white': picker.isSameMonth(
                         month.date,
-                        picker.state.selected
+                        state.selected
                       ),
-                      'hover:bg-gray-200': !picker.isSameMonth(month.date, picker.state.selected)
+                      'hover:bg-gray-200 dark:hover:bg-gray-700/50': !picker.isSameMonth(month.date, state.selected)
                     }"
                     class="p-2 rounded-full"
                     @click="picker.setMonth(month.date)"
@@ -245,34 +265,35 @@ onMounted(() => {
 
             <!-- Time Chooser //-->
             <div
-              v-if="picker.state.mode === 'hour'"
-              class="space-y-2 text-sm text-gray-700 text-center pt-4"
+              v-if="state.mode === 'hour' || state.mode === 'minute'"
+              class="space-y-2 text-sm dark:text-gray-200 text-gray-700 text-center pt-4"
             >
               <div
-                class="relative rounded-[100%] w-[260px] h-[260px] cursor-default my-0 mx-auto bg-[#eee]"
+                class="relative rounded-[100%] w-[260px] h-[260px] cursor-default my-0 mx-auto bg-gray-200 dark:bg-gray-500"
               >
                 <span
-                  class="top-1/2 left-1/2 w-[6px] h-[6px] -translate-y-1/2 -translate-x-1/2 rounded-[50%] bg-primary absolute"
+                  class="top-1/2 left-1/2 w-[6px] h-[6px] -translate-y-1/2 -translate-x-1/2 rounded-[50%] dark:bg-gray-700 bg-primary-600 absolute"
                 ></span>
                 <div
-                  class="bg-sky-600 bottom-1/2 h-2/5 start-[calc(50%-1px)] rtl:!left-auto origin-[center_bottom_0] w-[2px] absolute"
-                  style="transform: rotateZ(90deg); height: calc(40% + 1px)"
+                  :style="'transform: rotateZ(' + selectedDigit?.rotation.toString() + 'deg); height: calc(40% + 1px)'"
+                  class="dark:bg-gray-700 bg-primary-600 bottom-1/2 h-2/5 start-[calc(50%-1px)] rtl:!left-auto origin-[center_bottom_0] w-[2px] absolute"
                 >
                   <div
-                    class="-top-[21px] -left-[15px] w-[4px] border-[14px] border-solid border-sky-600 h-[4px] box-content rounded-[100%] absolute"
-                    style="background-color: rgb(25, 118, 210)"
+                    class="-top-[21px] -left-[15px] w-[4px] border-[14px] border-solid dark:border-gray-700 border-primary-600 h-[4px] box-content rounded-[100%] absolute dark:bg-gray-700 bg-primary-600"
                   ></div>
                 </div>
                 <template
-                  v-for="digit in picker.state.clockFace"
+                  v-for="digit in state.clockFace"
                   :key="'clock-digit-' + digit.label"
                 >
-                  <span
+                  <button
+                    :class="selectedDigit?.value !== digit?.value ? 'dark:hover:bg-gray-700/50 hover:bg-gray-300' : 'text-white'"
                     :style="digit.style"
                     class="absolute rounded-[100%] w-[32px] h-[32px] text-center cursor-pointer text-[1.1rem] bg-transparent flex justify-center items-center font-light focus:outline-none selection:bg-transparent"
+                    @click="setDigit(digit)"
                   >
                     <span>{{ digit.label }}</span>
-                  </span>
+                  </button>
                 </template>
               </div>
             </div>
@@ -282,19 +303,19 @@ onMounted(() => {
             <!-- Buttons //-->
             <div class="flex justify-between px-2 py-4 text-sm">
               <button
-                class="uppercase tracking-wide hover:bg-gray-200 rounded-md px-2 py-1"
+                class="uppercase tracking-wide dark:hover:bg-gray-700/50 hover:bg-gray-200 rounded-md px-2 py-1"
                 @click="clearDate"
               >
                 clear
               </button>
               <div class="flex space-x-2">
                 <button
-                  class="uppercase tracking-wide hover:bg-gray-200 rounded-md px-2 py-1"
+                  class="uppercase tracking-wide dark:hover:bg-gray-700/50 hover:bg-gray-200 rounded-md px-2 py-1"
                   @click="handleClose"
                 >
                   cancel
                 </button>
-                <button class="uppercase tracking-wide hover:bg-gray-200 rounded-md px-2 py-1">
+                <button class="uppercase tracking-wide dark:hover:bg-gray-700/50 hover:bg-gray-200 rounded-md px-2 py-1" @click="handleOK">
                   ok
                 </button>
               </div>

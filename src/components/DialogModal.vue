@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import Modal from '@/components/Modal.vue'
 import { defineEmits } from 'vue'
 
@@ -16,7 +16,7 @@ const handleClose = (e) => {
 <template>
   <modal :max-width="maxWidth" :show="show" @close="handleClose">
     <div>
-      <div class="px-6 py-4 text-lg bg-sky-600 text-white">
+      <div class="px-6 py-4 text-lg bg-primary-600 text-white">
         <slot name="title"></slot>
       </div>
       <div class="px-6 py-4 mt-4">

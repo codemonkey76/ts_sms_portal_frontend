@@ -6,21 +6,21 @@ const attrs = useAttrs();
 const isRouterLink = computed(() => 'to' in attrs);
 const isAnchorLink = computed(() => 'href' in attrs);
 
-const linkStyle = "text-sky-600/80 hover:underline font-semibold";
+const linkStyle = "text-primary-600/80 hover:underline font-semibold";
 
 </script>
 <template>
   <span>
 
-    <router-link v-if="isRouterLink" v-bind="$attrs" :class="linkStyle">
+    <router-link v-if="isRouterLink" :class="linkStyle" v-bind="$attrs">
       <slot></slot>
     </router-link>
 
-    <a v-else-if="isAnchorLink" v-bind="$attrs" :class="linkStyle">
+    <a v-else-if="isAnchorLink" :class="linkStyle" v-bind="$attrs">
       <slot></slot>
     </a>
 
-    <span v-else v-bind="$attrs" :class="linkStyle">
+    <span v-else :class="linkStyle" v-bind="$attrs">
       <slot></slot>
     </span>
   </span>

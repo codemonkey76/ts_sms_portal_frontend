@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useAuthStore } from '@/stores/auth'
-import { onMounted, ref, reactive, onBeforeUpdate } from 'vue'
+import { ref, reactive} from 'vue'
 import { useRouter } from 'vue-router'
 import IconChevronLeft from './icons/IconChevronLeft.vue'
 import IconLogo from './icons/IconLogo.vue'
@@ -76,7 +76,6 @@ function setLiRef(index) {
   }
 }
 
-
 const sidebar = ref(null)
 
 const showPopup = (index, item) => {
@@ -102,30 +101,30 @@ const showPopup = (index, item) => {
     </div>
     <!-- Header -->
 
-    <ul class="flex flex-col flex-1 bg-white overflow-y-auto p-4" :class="{ 'items-center': !sidebarOpen }">
+    <ul :class="{ 'items-center': !sidebarOpen }" class="flex flex-col flex-1 bg-white overflow-y-auto p-4">
       <template v-for="(item, index) in menu">
-        <li :key="item.id" v-if="hasPermission(item.permissions)" :ref="setLiRef(index)"
+        <li v-if="hasPermission(item.permissions)" :key="item.id" :ref="setLiRef(index)"
           @mouseenter="showPopup(index, item)">
-          <a @click.prevent="selectItem(item)" :href="item.link || '#'"
-            class="flex items-center space-x-2 py-2 text-gray-500 hover:text-gray-700">
-            <component :is="getIconComponent(item.icon)" class="transition-all duration-300"
-              :class="sidebarOpen ? 'w-5 h-5' : 'w-6 h-6'" />
+          <a :href="item.link || '#'" class="flex items-center space-x-2 py-2 text-gray-500 hover:text-gray-700"
+            @click.prevent="selectItem(item)">
+            <component :is="getIconComponent(item.icon)" :class="sidebarOpen ? 'w-5 h-5' : 'w-6 h-6'"
+              class="transition-all duration-300" />
             <div v-if="itemsShown" class="flex-1 text-md">{{ item.title }}</div>
-            <component v-if="item.expandable && sidebarOpen" :is="getIconComponent('ChevronDown')"
-              class="h-5 w-5 transition-all" :class="{ 'rotate-180': item.isOpen }" />
+            <component :is="getIconComponent('ChevronDown')" v-if="item.expandable && sidebarOpen"
+              :class="{ 'rotate-180': item.isOpen }" class="h-5 w-5 transition-all" />
           </a>
-          <ul v-if="item.showPopup" :style="item.popupStyle" @mouseleave="hidePopup(item)"
-            class="absolute left-0 top-0 border shadow p-2 y-2 w-[200px]">
+          <ul v-if="item.showPopup" :style="item.popupStyle" class="absolute left-0 top-0 border shadow p-2 y-2 w-[200px]"
+            @mouseleave="hidePopup(item)">
             <li v-for="(child, index) in item.children" :key="'popup-child-' + index"
               class="text-gray-500 hover:text-gray-700">
-              <a :href="child.link || '#'" @click.prevent="selectItem(child)" class="py-2">{{ child.title }}</a>
+              <a :href="child.link || '#'" class="py-2" @click.prevent="selectItem(child)">{{ child.title }}</a>
             </li>
           </ul>
-          <ul v-if="item.children && sidebarOpen" class="pl-4 transition-all duration-300 overflow-hidden"
-            @onmouseleave="hidePopup(item)" :class="{ 'max-h-0': !item.isOpen, 'max-h-96': item.isOpen }">
+          <ul v-if="item.children && sidebarOpen" :class="{ 'max-h-0': !item.isOpen, 'max-h-96': item.isOpen }"
+            class="pl-4 transition-all duration-300 overflow-hidden" @onmouseleave="hidePopup(item)">
             <li v-for="(child, index) in item.children" :key="'child-' + index"
               class="text-gray-500 hover:text-gray-700">
-              <a :href="child.link || '#'" @click.prevent="selectItem(child)" class="py-1">{{ child.title }}</a>
+              <a :href="child.link || '#'" class="py-1" @click.prevent="selectItem(child)">{{ child.title }}</a>
             </li>
           </ul>
         </li>
