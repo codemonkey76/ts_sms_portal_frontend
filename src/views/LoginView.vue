@@ -5,6 +5,7 @@ import ButtonPrimary from '@/components/buttons/ButtonPrimary.vue'
 import TextInput from '@/components/inputs/TextInput.vue'
 import IconLogo from '@/components/icons/IconLogo.vue'
 import NavLink from '@/components/NavLink.vue'
+import { ExclamationCircleIcon } from '@heroicons/vue/20/solid'
 import axios from 'axios'
 import { onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -50,8 +51,8 @@ onMounted(() => {
   <frame>
     <div class="flex min-h-full flex-1 flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div class="sm:mx-auto sm:w-full sm:max-w-md">
-        <icon-logo class="mx-auto h-24 w-auto" />
-        <h2 class="mt-6 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
+      <icon-logo class="mx-auto h-24 w-auto" />
+        <h2 class="mt-6 text-center text-2xl font-bold leading-9 tracking-tight dark:text-gray-300 text-gray-900">
           Sign in to your account
         </h2>
       </div>
@@ -59,8 +60,9 @@ onMounted(() => {
       <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-[480px]">
 
         <form class="space-y-6" @submit.prevent="handleLogin" action="#" method="POST">
+
           <text-input name="email" v-model="form.email" label="Email address" :has-error="errors.has('email')"
-            :error="errors.first('email')" type="email" required="" autocomplete="email" />
+            :error="errors.first('email')" type="email" required="" autocomplete="email" placeholder="user@email.com" />
 
           <text-input name="password" v-model="form.password" label="Password" :has-error="errors.has('password')"
             :error="errors.first('password')" type="password" required="" autocomplete="current-password" />
@@ -70,7 +72,7 @@ onMounted(() => {
             <div class="flex items-center">
               <input v-model="remember_me" id="remember-me" name="remember-me" type="checkbox"
                 class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-600" />
-              <label for="remember-me" class="ml-3 block text-sm leading-6 text-gray-900">Remember me</label>
+              <label for="remember-me" class="ml-3 block text-sm leading-6 dark:text-gray-300 text-gray-900">Remember me</label>
             </div>
 
             <div class="text-sm leading-6">

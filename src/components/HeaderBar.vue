@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { useRouter } from 'vue-router'
 import {
 
@@ -52,18 +52,17 @@ const handleMenuItemClick = (item: NavLink) => {
 
 </script>
 <template>
-  <div class="bg-white h-20 border-b flex items-center justify-between px-10">
-    <span class="text-xl font-montserrat font-light">Dashboard</span>
+  <div class="dark:bg-gray-800 bg-white h-20 border-b dark:border-gray-600 flex items-center justify-between px-10">
+    <span class="text-xl font-montserrat font-light dark:text-gray-300">Dashboard</span>
     <div class="flex items-center space-x-2">
-      <div>Foo</div>
       <Menu as="div" class="relative">
         <MenuButton class="-m-1.5 flex items-center p-1.5">
           <span class="sr-only">Open user menu</span>
-          <img class="h-10 w-10 rounded-full object-cover"
-            src="https://ui-avatars.com/api/?name=A+U&amp;color=7F9CF5&amp;background=EBF4FF" alt="Profile Logo">
+          <img alt="Profile Logo" class="h-10 w-10 rounded-full object-cover"
+            src="https://ui-avatars.com/api/?name=A+U&amp;color=7F9CF5&amp;background=EBF4FF">
           <span class="hidden lg:flex lg:items-center">
-            <span class="ml-4 text-sm leading-6 text-gray-900" aria-hidden="true">{{ auth.user_data?.user.name }}</span>
-            <ChevronDownIcon class="ml-2 h-5 w-5 text-gray-400" aria-hidden="true" />
+            <span aria-hidden="true" class="ml-4 text-sm leading-6 text-gray-900">{{ auth.user_data?.user.name }}</span>
+            <ChevronDownIcon aria-hidden="true" class="ml-2 h-5 w-5 text-gray-400" />
           </span>
         </MenuButton>
         <transition enter-active-class="transition ease-out duration-100"
@@ -73,8 +72,8 @@ const handleMenuItemClick = (item: NavLink) => {
           <MenuItems
             class="absolute right-0 z-10 mt-2.5 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
             <MenuItem v-for="item in userNavigation" :key="item.label" v-slot="{ active }">
-            <button @click="handleMenuItemClick(item)"
-              :class="[active ? 'bg-gray-50' : '', 'block px-3 py-1 text-sm leading-6 text-gray-900']">{{ item.label
+            <button :class="[active ? 'bg-gray-50' : '', 'block px-3 py-1 text-sm leading-6 text-gray-900']"
+              @click="handleMenuItemClick(item)">{{ item.label
               }}</button>
             </MenuItem>
           </MenuItems>

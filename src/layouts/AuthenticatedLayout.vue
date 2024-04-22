@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import DesktopSidebar from '@/components/DesktopSidebar.vue'
 import Sidebar from '@/components/Sidebar.vue'
 import HeaderBar from '@/components/HeaderBar.vue'
@@ -32,7 +32,7 @@ const menu = reactive<MenuItem>({
 </script>
 
 <template>
-  <div class="flex bg-white h-screen">
+  <div class="flex dark:bg-gray-900 bg-white h-screen">
     <!-- Sidebar -->
     <desktop-sidebar />
     <!-- Sidebar  -->
